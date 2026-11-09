@@ -25,6 +25,16 @@
                         <a class="nav-link" href="{% url 'cursos:gestion' %}">Gestión</a>
                     </li>
                 </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'carrito:ver' %}">
+                            Carrito
+                            {% if carrito_cantidad %}
+                                <span class="badge text-bg-warning ms-1">{{ carrito_cantidad }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>

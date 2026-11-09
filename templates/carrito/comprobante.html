@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Comprobante | CodeAcademy Hub{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                Solicitud registrada (simulación)
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between flex-wrap mb-3">
+                    <div>
+                        <div class="text-muted small">Código de solicitud</div>
+                        <div class="fw-bold">{{ codigo_solicitud }}</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="text-muted small">Fecha</div>
+                        <div class="fw-bold">{{ fecha|date:"d/m/Y H:i" }}</div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Curso</th>
+                                <th class="text-center">Cupos</th>
+                                <th class="text-end">Precio</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>{{ item.curso.nombre }} <span class="text-muted small">({{ item.curso.codigo }})</span></td>
+                                <td class="text-center">{{ item.cantidad }}</td>
+                                <td class="text-end">${{ item.curso.precio|floatformat:"0g" }}</td>
+                                <td class="text-end">${{ item.subtotal|floatformat:"0g" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="ms-auto" style="max-width: 280px;">
+                    <div class="d-flex justify-content-between"><span>Subtotal</span><span>${{ subtotal|floatformat:"0g" }}</span></div>
+                    <div class="d-flex justify-content-between text-success"><span>Descuento ({{ porcentaje }}%)</span><span>-${{ descuento|floatformat:"0g" }}</span></div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between fs-5 fw-bold"><span>Total</span><span>${{ total|floatformat:"0g" }}</span></div>
+                </div>
+
+                <p class="text-muted small mt-4 mb-3">
+                    Este comprobante es una simulación: no se guardó ninguna inscripción en la base de datos.
+                </p>
+                <a href="{% url 'cursos:lista' %}" class="btn btn-primary">Volver al catálogo</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

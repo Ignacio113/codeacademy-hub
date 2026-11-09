@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi carrito | CodeAcademy Hub{% endblock %}
+
+{% block content %}
+<h1 class="h3 fw-bold mb-3">Carrito de cursos</h1>
+
+{% if items %}
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Curso</th>
+                            <th>Precio</th>
+                            <th style="width: 190px;">Cupos</th>
+                            <th class="text-end">Subtotal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'cursos:detalle' item.curso.codigo %}" class="fw-semibold text-decoration-none">
+                                    {{ item.curso.nombre }}
+                                </a>
+                                <div class="small text-muted">{{ item.curso.codigo }} · {{ item.curso.categoria.nombre }}</div>
+                            </td>
+                            <td>${{ item.curso.precio|floatformat:"0g" }}</td>
+                            <td>
+                                <form method="post" action="{% url 'carrito:actualizar' item.curso.codigo %}" class="d-flex gap-1">
+                                    {% csrf_token %}
+                                    <input type="number" name="cantidad" value="{{ item.cantidad }}"
+                                           min="1" max="{{ item.curso.cupos }}"
+                                           class="form-control form-control-sm" style="width: 80px;">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Actualizar</button>
+                                </form>
+                                <div class="small text-muted">Disponibles: {{ item.curso.cupos }}</div>
+                            </td>
+                            <td class="text-end fw-semibold">${{ item.subtotal|floatformat:"0g" }}</td>
+                            <td class="text-end">
+                                <form method="post" action="{% url 'carrito:quitar' item.curso.codigo %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Quitar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-3">
+            <a href="{% url 'cursos:lista' %}" class="btn btn-outline-secondary">Seguir explorando</a>
+            <form method="post" action="{% url 'carrito:vaciar' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger">Vaciar carrito</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 fw-bold mb-3">Resumen</h2>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal</span>
+                    <span>${{ subtotal|floatformat:"0g" }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 {% if aplica_descuento %}text-success{% else %}text-muted{% endif %}">
+                    <span>Descuento ({{ porcentaje }}%)</span>
+                    <span>-${{ descuento|floatformat:"0g" }}</span>
+                </div>
+                {% if not aplica_descuento %}
+                    <div class="alert alert-info py-2 small">
+                        Inscríbete en {{ faltan }} curso{{ faltan|pluralize }} más para obtener {{ porcentaje }}% de descuento.
+                    </div>
+                {% endif %}
+                <hr>
+                <div class="d-flex justify-content-between fs-5 fw-bold mb-3">
+                    <span>Total</span>
+                    <span>${{ total|floatformat:"0g" }}</span>
+                </div>
+                <form method="post" action="{% url 'carrito:confirmar' %}" class="d-grid">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Confirmar solicitud</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card shadow-sm text-center p-5">
+    <h2 class="h5">Tu carrito está vacío</h2>
+    <p class="text-muted">Explora el catálogo y agrega los cursos que te interesen.</p>
+    <div><a href="{% url 'cursos:lista' %}" class="btn btn-primary">Ir al catálogo</a></div>
+</div>
+{% endif %}
+{% endblock %}

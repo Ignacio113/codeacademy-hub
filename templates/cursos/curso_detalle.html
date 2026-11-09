@@ -43,7 +43,14 @@
                         <strong>{{ curso.get_estado_display }}</strong>
                     </li>
                 </ul>
-
+                {% if curso.estado == 'DISPONIBLE' and curso.cupos > 0 %}
+                    <form method="post" action="{% url 'carrito:agregar' curso.codigo %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Agregar al carrito</button>
+                    </form>
+                    {% else %}
+                        <button type="button" class="btn btn-secondary" disabled>No disponible</button>
+                    {% endif %}
                 <a href="{% url 'cursos:lista' %}" class="btn btn-outline-secondary">Volver al catálogo</a>
             </div>
         </div>
