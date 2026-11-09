@@ -2,4 +2,6 @@ from django.apps import AppConfig
 
 
 class CursosConfig(AppConfig):
-    name = 'cursos'
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.cursos'
+    verbose_name = 'cursos'
