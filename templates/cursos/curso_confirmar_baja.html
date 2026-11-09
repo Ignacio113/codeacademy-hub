@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Dar de baja | CodeAcademy Hub{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white">Confirmar baja de curso</div>
+            <div class="card-body p-4">
+                <p>¿Seguro que quieres dar de baja el siguiente curso?</p>
+                <ul class="list-unstyled bg-light rounded p-3 border">
+                    <li><strong>Código:</strong> {{ curso.codigo }}</li>
+                    <li><strong>Nombre:</strong> {{ curso.nombre }}</li>
+                    <li><strong>Categoría:</strong> {{ curso.categoria.nombre }}</li>
+                    <li><strong>Precio:</strong> ${{ curso.precio|floatformat:"0g" }}</li>
+                </ul>
+                <p class="text-muted small">
+                    El curso dejará de mostrarse en el catálogo, pero sus datos se conservan
+                    y podrás reactivarlo desde Editar.
+                </p>
+
+                <form method="post" class="d-flex justify-content-end gap-2">
+                    {% csrf_token %}
+                    <a href="{% url 'cursos:gestion' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-danger">Sí, dar de baja</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

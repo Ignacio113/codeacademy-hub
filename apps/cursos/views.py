@@ -1,7 +1,9 @@
+from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
+from .forms import CursoForm
 from .models import CategoriaCurso, Curso
 
 
@@ -53,3 +55,50 @@ def curso_detalle(request, codigo):
         vigente=True,
     )
     return render(request, 'cursos/curso_detalle.html', {'curso': curso})
+
+
+def curso_gestion(request):
+    cursos = Curso.objects.select_related('categoria').order_by('codigo')
+    return render(request, 'cursos/curso_gestion.html', {'cursos': cursos})
+
+
+def curso_crear(request):
+    if request.method == 'POST':
+        form = CursoForm(request.POST, request.FILES)
+        if form.is_valid():
+            curso = form.save()
+            messages.success(request, f'Curso "{curso.nombre}" creado correctamente.')
+            return redirect('cursos:gestion')
+    else:
+        form = CursoForm()
+    return render(request, 'cursos/curso_form.html', {
+        'form': form,
+        'titulo': 'Nuevo curso',
+    })
+
+
+def curso_editar(request, codigo):
+    curso = get_object_or_404(Curso, codigo=codigo)
+    if request.method == 'POST':
+        form = CursoForm(request.POST, request.FILES, instance=curso)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Curso "{curso.nombre}" actualizado correctamente.')
+            return redirect('cursos:gestion')
+    else:
+        form = CursoForm(instance=curso)
+    return render(request, 'cursos/curso_form.html', {
+        'form': form,
+        'curso': curso,
+        'titulo': f'Editar curso {curso.codigo}',
+    })
+
+
+def curso_eliminar(request, codigo):
+    curso = get_object_or_404(Curso, codigo=codigo)
+    if request.method == 'POST':
+        curso.vigente = False
+        curso.save(update_fields=['vigente'])
+        messages.warning(request, f'Curso "{curso.nombre}" dado de baja. Ya no aparece en el catálogo.')
+        return redirect('cursos:gestion')
+    return render(request, 'cursos/curso_confirmar_baja.html', {'curso': curso})
