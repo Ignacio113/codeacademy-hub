@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ curso.nombre }} | CodeAcademy Hub{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'cursos:lista' %}">Catálogo</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'cursos:lista' %}?categoria={{ curso.categoria.id }}">{{ curso.categoria.nombre }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ curso.codigo }}</li>
+    </ol>
+</nav>
+
+<div class="card shadow-sm">
+    <div class="row g-0">
+        <div class="col-md-5">
+            {% if curso.imagen %}
+                <img src="{{ curso.imagen.url }}" class="img-fluid rounded-start w-100"
+                     alt="{{ curso.nombre }}" style="max-height: 420px; object-fit: cover;">
+            {% else %}
+                <div class="bg-secondary-subtle text-secondary d-flex align-items-center justify-content-center h-100"
+                     style="min-height: 260px;">Sin imagen</div>
+            {% endif %}
+        </div>
+        <div class="col-md-7">
+            <div class="card-body p-4">
+                <span class="badge text-bg-dark mb-2">{{ curso.categoria.nombre }}</span>
+                <h1 class="h3 fw-bold">{{ curso.nombre }}</h1>
+                <p class="text-muted">Código: {{ curso.codigo }}</p>
+                <p style="white-space: pre-line;">{{ curso.descripcion }}</p>
+
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Precio</span>
+                        <strong>${{ curso.precio|floatformat:"0g" }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Cupos disponibles</span>
+                        <strong>{{ curso.cupos }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Estado</span>
+                        <strong>{{ curso.get_estado_display }}</strong>
+                    </li>
+                </ul>
+
+                <a href="{% url 'cursos:lista' %}" class="btn btn-outline-secondary">Volver al catálogo</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

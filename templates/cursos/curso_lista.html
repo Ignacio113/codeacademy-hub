@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo | CodeAcademy Hub{% endblock %}
+
+{% block content %}
+<h1 class="h3 fw-bold mb-3">Catálogo de Cursos</h1>
+
+<form method="get" class="card card-body shadow-sm mb-4">
+    <div class="row g-2">
+        <div class="col-md-5">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Buscar por nombre, código o descripción"
+                   value="{{ busqueda }}">
+        </div>
+        <div class="col-md-3">
+            <select name="categoria" class="form-select">
+                <option value="">Todas las categorías</option>
+                {% for cat in categorias %}
+                    <option value="{{ cat.id }}"
+                        {% if categoria_id == cat.id|stringformat:"s" %}selected{% endif %}>
+                        {{ cat.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="orden" class="form-select">
+                <option value="nombre" {% if orden == 'nombre' %}selected{% endif %}>Nombre (A-Z)</option>
+                <option value="precio_asc" {% if orden == 'precio_asc' %}selected{% endif %}>Precio: menor a mayor</option>
+                <option value="precio_desc" {% if orden == 'precio_desc' %}selected{% endif %}>Precio: mayor a menor</option>
+                <option value="recientes" {% if orden == 'recientes' %}selected{% endif %}>Más recientes</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </div>
+</form>
+
+<p class="text-muted small">{{ pagina.paginator.count }} curso(s) encontrado(s)</p>
+
+<div class="row g-4">
+    {% for curso in pagina %}
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            {% if curso.imagen %}
+                <img src="{{ curso.imagen.url }}" class="card-img-top"
+                     alt="{{ curso.nombre }}" style="height: 180px; object-fit: cover;">
+            {% else %}
+                <div class="bg-secondary-subtle text-secondary d-flex align-items-center justify-content-center"
+                     style="height: 180px;">Sin imagen</div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge text-bg-dark">{{ curso.categoria.nombre }}</span>
+                    <span class="badge
+                        {% if curso.estado == 'DISPONIBLE' %}text-bg-success
+                        {% elif curso.estado == 'AGOTADO' %}text-bg-danger
+                        {% elif curso.estado == 'PROXIMAMENTE' %}text-bg-info
+                        {% else %}text-bg-secondary{% endif %}">
+                        {{ curso.get_estado_display }}
+                    </span>
+                </div>
+                <h5 class="card-title">{{ curso.nombre }}</h5>
+                <p class="text-muted small mb-1">Código: {{ curso.codigo }}</p>
+                <p class="card-text small flex-grow-1">{{ curso.descripcion|truncatechars:90 }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span class="fs-5 fw-bold">${{ curso.precio|floatformat:"0g" }}</span>
+                    <span class="small text-muted">Cupos: {{ curso.cupos }}</span>
+                </div>
+                <a href="{% url 'cursos:detalle' curso.codigo %}"
+                   class="btn btn-outline-primary btn-sm mt-3">Ver detalle</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">No se encontraron cursos con esos criterios.</div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if pagina.has_other_pages %}
+<nav class="mt-4" aria-label="Paginación">
+    <ul class="pagination justify-content-center">
+        {% if pagina.has_previous %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?{% if parametros %}{{ parametros }}&{% endif %}page={{ pagina.previous_page_number }}">Anterior</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+        {% endif %}
+
+        {% for n in pagina.paginator.page_range %}
+            <li class="page-item {% if n == pagina.number %}active{% endif %}">
+                <a class="page-link"
+                   href="?{% if parametros %}{{ parametros }}&{% endif %}page={{ n }}">{{ n }}</a>
+            </li>
+        {% endfor %}
+
+        {% if pagina.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?{% if parametros %}{{ parametros }}&{% endif %}page={{ pagina.next_page_number }}">Siguiente</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
