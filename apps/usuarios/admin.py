@@ -1,3 +1,11 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Perfil
+
+
+@admin.register(Perfil)
+class PerfilAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'rut', 'telefono', 'rol')
+    list_filter = ('rol',)
+    search_fields = ('usuario__username', 'usuario__email', 'rut')
+    list_select_related = ('usuario',)

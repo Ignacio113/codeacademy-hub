@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi perfil | CodeAcademy Hub{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h4 fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h1>
+                <p class="text-muted">
+                    @{{ user.username }}
+                    {% if user.is_staff %}<span class="badge text-bg-warning ms-1">Personal</span>{% endif %}
+                </p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Correo</span><strong>{{ user.email|default:"No registrado" }}</strong>
+                    </li>
+                    {% if perfil %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>RUT</span><strong>{{ perfil.rut }}</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Teléfono</span><strong>{{ perfil.telefono|default:"No registrado" }}</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Rol institucional</span><strong>{{ perfil.get_rol_display }}</strong>
+                        </li>
+                    {% else %}
+                        <li class="list-group-item text-muted">Esta cuenta aún no tiene perfil asociado.</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

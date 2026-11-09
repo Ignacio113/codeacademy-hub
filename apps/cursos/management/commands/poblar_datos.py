@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
 from apps.cursos.models import CategoriaCurso, Curso
+from apps.usuarios.models import Perfil
 
 
 class Command(BaseCommand):
@@ -64,18 +65,25 @@ class Command(BaseCommand):
                 },
             )
 
-        # 3. Usuarios de prueba
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser(
-                username='admin',
-                email='admin@codeacademyhub.cl',
-                password='Admin12345',
-            )
-        if not User.objects.filter(username='estudiante').exists():
-            User.objects.create_user(
-                username='estudiante',
-                email='estudiante@codeacademyhub.cl',
-                password='Estudiante12345',
+                # 3. Usuarios de prueba (con perfil)
+        usuarios = [
+            ('admin', 'admin@codeacademyhub.cl', 'Admin12345', True,
+             '11111111-1', '+56911111111', Perfil.Rol.ADMINISTRATIVO),
+            ('estudiante', 'estudiante@codeacademyhub.cl', 'Estudiante12345', False,
+             '12345678-5', '+56922222222', Perfil.Rol.ESTUDIANTE),
+        ]
+        for username, email, password, es_admin, rut, telefono, rol in usuarios:
+            usuario = User.objects.filter(username=username).first()
+            if usuario is None:
+                if es_admin:
+                    usuario = User.objects.create_superuser(
+                        username=username, email=email, password=password)
+                else:
+                    usuario = User.objects.create_user(
+                        username=username, email=email, password=password)
+            Perfil.objects.update_or_create(
+                usuario=usuario,
+                defaults={'rut': rut, 'telefono': telefono, 'rol': rol},
             )
 
         self.stdout.write(self.style.SUCCESS('Datos de prueba cargados correctamente.'))

@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 from apps.cursos.models import Curso
 
@@ -78,7 +79,7 @@ def carrito_vaciar(request):
     messages.info(request, 'Carrito vaciado.')
     return redirect('carrito:ver')
 
-
+@login_required
 @require_POST
 def carrito_confirmar(request):
     resumen = calcular_resumen(request)

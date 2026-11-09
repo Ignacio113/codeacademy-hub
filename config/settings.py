@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.cursos',
-    'apps.carrito'
+    'apps.carrito',
+    'apps.usuarios',
 ]
 
 MIDDLEWARE = [
@@ -141,3 +142,7 @@ MAILERS = {
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
+
+LOGIN_URL = 'usuarios:login'
+LOGIN_REDIRECT_URL = 'cursos:lista'
+LOGOUT_REDIRECT_URL = 'cursos:lista'

@@ -21,11 +21,13 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'cursos:lista' %}">Catálogo</a>
                     </li>
+                    {% if user.is_staff %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'cursos:gestion' %}">Gestión</a>
                     </li>
+                    {% endif %}
                 </ul>
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'carrito:ver' %}">
                             Carrito
@@ -34,6 +36,24 @@
                             {% endif %}
                         </a>
                     </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'usuarios:perfil' %}">{{ user.first_name|default:user.username }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'usuarios:logout' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'usuarios:login' %}">Ingresar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-warning btn-sm" href="{% url 'usuarios:registro' %}">Registrarse</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

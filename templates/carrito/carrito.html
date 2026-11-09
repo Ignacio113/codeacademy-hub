@@ -85,10 +85,20 @@
                     <span>Total</span>
                     <span>${{ total|floatformat:"0g" }}</span>
                 </div>
-                <form method="post" action="{% url 'carrito:confirmar' %}" class="d-grid">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Confirmar solicitud</button>
-                </form>
+
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'carrito:confirmar' %}" class="d-grid">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Confirmar solicitud</button>
+                    </form>
+                {% else %}
+                    <div class="d-grid">
+                        <a href="{% url 'usuarios:login' %}?next={% url 'carrito:ver' %}" class="btn btn-primary">
+                            Inicia sesión para confirmar
+                        </a>
+                    </div>
+                    <div class="form-text text-center">Tu carrito se conserva al iniciar sesión.</div>
+                {% endif %}
             </div>
         </div>
     </div>

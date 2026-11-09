@@ -2,10 +2,21 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .forms import CursoForm
 from .models import CategoriaCurso, Curso
 
+
+def es_personal(usuario):
+    return usuario.is_staff
+
+
+personal_requerido = user_passes_test(
+    es_personal,
+    login_url='cursos:lista',
+    redirect_field_name=None,
+)
 
 def curso_lista(request):
     busqueda = request.GET.get('q', '').strip()
@@ -57,11 +68,14 @@ def curso_detalle(request, codigo):
     return render(request, 'cursos/curso_detalle.html', {'curso': curso})
 
 
+@login_required
+@personal_requerido
 def curso_gestion(request):
     cursos = Curso.objects.select_related('categoria').order_by('codigo')
     return render(request, 'cursos/curso_gestion.html', {'cursos': cursos})
 
-
+@login_required
+@personal_requerido
 def curso_crear(request):
     if request.method == 'POST':
         form = CursoForm(request.POST, request.FILES)
@@ -76,7 +90,8 @@ def curso_crear(request):
         'titulo': 'Nuevo curso',
     })
 
-
+@login_required
+@personal_requerido
 def curso_editar(request, codigo):
     curso = get_object_or_404(Curso, codigo=codigo)
     if request.method == 'POST':
@@ -93,7 +108,8 @@ def curso_editar(request, codigo):
         'titulo': f'Editar curso {curso.codigo}',
     })
 
-
+@login_required
+@personal_requerido
 def curso_eliminar(request, codigo):
     curso = get_object_or_404(Curso, codigo=codigo)
     if request.method == 'POST':
